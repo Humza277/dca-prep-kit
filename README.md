@@ -377,7 +377,7 @@ To change this behavior set `"live-restore: true"` in `/etc/docker/deamon.json` 
 
 ![Docker Networking Mindmap](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Piotr1215/dca-prep-kit/master/diagrams/docker-networks.puml&fmt=svg)
 
-> <font color=yellow>**Important: Containers can only communicate on a user defined bridge/host network**</font>
+> **Important: Containers can only communicate on a user defined bridge/host network**
 
 # Security 15%
 

@@ -2,5 +2,6 @@ site_name: "Docker Certified Associate Preparation Guide"
 nav:
     - Home: index.md
     - About: about.md
-theme: windmill-dark
+#theme: windmill-dark
 #theme: ivory
+theme: readthedocs
