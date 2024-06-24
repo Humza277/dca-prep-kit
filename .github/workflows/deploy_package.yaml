@@ -1,23 +1,46 @@
-name: Publish to GH Container Registry
-# Controls when the action will run.
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Create and publish a Docker image
+
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  release:
+    types: [published]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build_and_publish:
+  build-and-push-image:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' # Running this job only for master branch
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-    - uses: actions/checkout@v2 # Checking out the repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Build and Publish latest Docker image
-      uses: VaultVulp/gp-docker-action@1.1.8
-      with:
-        github-token: ${{ secrets.GH_TOKEN_PACKAGES }} # Provide GITHUB_TOKEN to login into the GitHub Packages
-        image-name: itcerts-guide # Provide only Docker image name, tag will be automatically set to latest
-        dockerfile: Dockerfile
+      - name: Log in to the Container registry
+        uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN_PACKAGES }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@f7b4ed12385588c3f9bc252f0a2b520d83b52d48
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@31159d49c0d4756269a0940a750801a1ea5d7003
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
